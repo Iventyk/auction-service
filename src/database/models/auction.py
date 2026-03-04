@@ -2,7 +2,14 @@ from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 
-from sqlalchemy import DateTime, Enum as SqlEnum, Numeric, String, ForeignKey, func
+from sqlalchemy import (
+    DateTime,
+    Enum as SqlEnum,
+    Numeric,
+    String,
+    ForeignKey,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.base import Base
@@ -66,9 +73,7 @@ class Bid(Base):
 
     bidder_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    amount: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2), nullable=False
-    )
+    amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

@@ -3,7 +3,7 @@ line-length = 79
 target-version = ["py313"]
 exclude = '''
 /(
-    migrations
+  | alembic
   | venv
   | .venv
   | __pycache__

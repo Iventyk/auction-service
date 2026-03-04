@@ -1,4 +1,5 @@
 from functools import lru_cache
+import os
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -16,7 +17,7 @@ class Settings(BaseSettings):
 
     app_port: int = 8000
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore")
 
     @property
     def database_url(self) -> str:
@@ -33,4 +34,15 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    """
+    Return cached settings instance
+    with environment variables explicitly passed.
+    """
+    return Settings(
+        postgres_db=os.getenv("POSTGRES_DB", ""),
+        postgres_user=os.getenv("POSTGRES_USER", ""),
+        postgres_password=os.getenv("POSTGRES_PASSWORD", ""),
+        postgres_host=os.getenv("POSTGRES_HOST", "localhost"),
+        postgres_port=int(os.getenv("POSTGRES_PORT", 5432)),
+        app_port=int(os.getenv("APP_PORT", 8000)),
+    )

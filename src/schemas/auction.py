@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 
@@ -10,45 +10,57 @@ class LotStatus(str, Enum):
     ENDED = "ended"
 
 
-class LotBase(BaseModel):
+class LotCreate(BaseModel):
     title: str
     start_price: Decimal
     end_time: datetime
 
     @field_validator("end_time")
     @classmethod
-    def validate_end_time(cls, v: datetime) -> datetime:
-        if v <= datetime.now():
+    def validate_end_time(cls, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        if value <= datetime.now(timezone.utc):
             raise ValueError("end_time must be in the future")
-        return v
+
+        return value
 
 
-class LotCreate(LotBase):
-    pass
-
-
-class LotRead(LotBase):
+class LotRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    title: str
+    start_price: Decimal
     current_price: Decimal
     status: LotStatus
+    end_time: datetime
     created_at: datetime
 
 
-class BidBase(BaseModel):
-    bidder_id: str
-    bidder_name: str
+class BidCreate(BaseModel):
+    bidder: str
     amount: Decimal
 
 
-class BidCreate(BidBase):
-    pass
-
-
-class BidRead(BidBase):
+class BidRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     lot_id: int
+    bidder_name: str
+    amount: Decimal
     created_at: datetime
+
+
+class BidPlaced(BaseModel):
+    type: str
+    lot_id: int
+    bidder: str
+    amount: Decimal
+
+
+class TimeExtended(BaseModel):
+    type: str
+    lot_id: int
+    end_time: datetime

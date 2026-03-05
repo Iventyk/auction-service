@@ -44,18 +44,18 @@ class AuctionCrud:
         return list(result.scalars().all())
 
     async def place_bid(
-        self,
-        session: AsyncSession,
-        lot_id: int,
-        payload: BidCreate,
+            self,
+            session: AsyncSession,
+            lot_id: int,
+            payload: BidCreate,
     ) -> tuple[Bid, Lot, dict, dict | None]:
         lot = await session.get(Lot, lot_id, with_for_update=True)
         if lot is None:
             raise LotNotFoundError()
 
         lot = cast(Lot, lot)
-
         now = datetime.now(timezone.utc)
+
         if lot.status == LotStatus.ENDED or lot.end_time <= now:
             lot.status = LotStatus.ENDED
             await session.commit()
@@ -76,7 +76,9 @@ class AuctionCrud:
         if lot.end_time - now <= TIME_EXTENSION_WINDOW:
             lot.end_time += TIME_EXTENSION_AMOUNT
             time_extended = TimeExtended(
-                lot_id=lot.id, end_time=lot.end_time
+                type="time_extended",
+                lot_id=lot.id,
+                end_time=lot.end_time
             )
             time_extended_event = time_extended.model_dump(mode="json")
 
@@ -85,10 +87,12 @@ class AuctionCrud:
         await session.refresh(bid)
 
         bid_placed = BidPlaced(
+            type="bid_placed",
             lot_id=lot.id,
             bidder=bid.bidder_name,
             amount=bid.amount,
         )
+
         return (
             bid,
             lot,

@@ -44,10 +44,10 @@ class AuctionCrud:
         return list(result.scalars().all())
 
     async def place_bid(
-            self,
-            session: AsyncSession,
-            lot_id: int,
-            payload: BidCreate,
+        self,
+        session: AsyncSession,
+        lot_id: int,
+        payload: BidCreate,
     ) -> tuple[Bid, Lot, dict, dict | None]:
         lot = await session.get(Lot, lot_id, with_for_update=True)
         if lot is None:
@@ -76,9 +76,7 @@ class AuctionCrud:
         if lot.end_time - now <= TIME_EXTENSION_WINDOW:
             lot.end_time += TIME_EXTENSION_AMOUNT
             time_extended = TimeExtended(
-                type="time_extended",
-                lot_id=lot.id,
-                end_time=lot.end_time
+                type="time_extended", lot_id=lot.id, end_time=lot.end_time
             )
             time_extended_event = time_extended.model_dump(mode="json")
 

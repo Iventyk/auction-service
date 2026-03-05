@@ -13,7 +13,7 @@ def create_application() -> FastAPI:
 
     @application.exception_handler(AuctionError)
     async def handle_auction_error(
-            _: Request, exc: AuctionError
+        _: Request, exc: AuctionError
     ) -> JSONResponse:
         return JSONResponse(
             status_code=exc.status_code,

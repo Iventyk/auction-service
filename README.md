@@ -65,7 +65,7 @@ When a new valid bid is placed:
 
 - `GET /ws/lots/{lot_id}` — subscribe to lot events
 
-![img_1.png](img_1.png)
+![img_1.png](assets/images/img_1.png)
 
 ---
 
@@ -92,7 +92,7 @@ When a new valid bid is placed:
 }
 ```
 
-![img.png](img.png)
+![img.png](assets/images/img.png)
 
 ---
 

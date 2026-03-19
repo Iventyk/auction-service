@@ -1,4 +1,4 @@
-"""Backward-compatible wrappers around CRUD layer."""
+"""Service layer for auction workflows."""
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

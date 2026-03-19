@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config.dependencies import get_db_session
-from src.crud import auction_crud
+from src.services import auction as auction_service
 from src.schemas.auction import BidCreate, BidRead, LotCreate, LotRead
 from src.websocket.manager import ws_manager
 
@@ -14,7 +14,7 @@ async def create_lot_endpoint(
     payload: LotCreate,
     session: AsyncSession = Depends(get_db_session),
 ) -> LotRead:
-    lot = await auction_crud.create_lot(session=session, payload=payload)
+    lot = await auction_service.create_lot(session=session, payload=payload)
     return LotRead.model_validate(lot)
 
 
@@ -22,7 +22,7 @@ async def create_lot_endpoint(
 async def get_active_lots_endpoint(
     session: AsyncSession = Depends(get_db_session),
 ) -> list[LotRead]:
-    lots = await auction_crud.get_active_lots(session=session)
+    lots = await auction_service.get_active_lots(session=session)
     return [LotRead.model_validate(lot) for lot in lots]
 
 
@@ -32,7 +32,7 @@ async def place_bid_endpoint(
     payload: BidCreate,
     session: AsyncSession = Depends(get_db_session),
 ) -> BidRead:
-    bid, lot, bid_event, extension_event = await auction_crud.place_bid(
+    bid, lot, bid_event, extension_event = await auction_service.place_bid(
         session=session,
         lot_id=lot_id,
         payload=payload,
